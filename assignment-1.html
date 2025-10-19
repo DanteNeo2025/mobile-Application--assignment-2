@@ -451,9 +451,7 @@
         <ion-toolbar>
           <ion-title> title </ion-title>
           <ion-buttons slot="end">
-            <ion-button fill="solid">ref</ion-button>
             <ion-button fill="outline">ref</ion-button>
-            <ion-button fill="clear">ref</ion-button>
             <ion-button>
               <ion-icon name="refresh"></ion-icon>
             </ion-button>
@@ -534,234 +532,8 @@
       </ion-content>
     </ion-app>
     <script>
-      // 請將你的 items 陣列資料放在這裡
-      const items = [
-        {
-          title: "Python 基礎入門",
-          language: "Python 3",
-          level: "入門",
-          details:
-            "從零開始學習 Python 程式設計，包含變數、流程控制、函式等基礎概念。",
-          category: "程式入門",
-          tags: ["Python", "程式設計", "入門課程"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/pD4Ga6aIN0c/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=pD4Ga6aIN0c",
-        },
-        {
-          title: "JavaScript 前端開發",
-          language: "JavaScript",
-          level: "入門",
-          details: "學習網頁互動、DOM 操作與 ES6 語法。",
-          category: "前端開發",
-          tags: ["JavaScript", "網頁", "前端"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/0FLkwZ-PH2I/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=0FLkwZ-PH2I",
-        },
-        {
-          title: "React 基礎實作",
-          language: "JavaScript",
-          level: "進階",
-          details: "掌握 React 元件、props、state 與生命週期。",
-          category: "前端開發",
-          tags: ["React", "前端", "元件化"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/aBTiZfShe-4/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=aBTiZfShe-4&t=4321s",
-        },
-        {
-          title: "資料結構與演算法",
-          language: "Python 3",
-          level: "進階",
-          details: "介紹常見資料結構與演算法，提升解題能力。",
-          category: "演算法",
-          tags: ["資料結構", "演算法", "LeetCode"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/WNN2-jw1EVU/hqdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=WNN2-jw1EVU",
-        },
-        {
-          title: "Android App 開發",
-          language: "Kotlin",
-          level: "入門",
-          details: "使用 Kotlin 開發 Android 行動應用程式。",
-          category: "行動開發",
-          tags: ["Android", "Kotlin", "App"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/6pJqYvge8TY/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl:
-            "https://www.youtube.com/watch?v=6pJqYvge8TY&list=PLPh5-KovAYtFyX5elSTT9wEMt0HxMhR7L",
-        },
-        {
-          title: "iOS App 開發",
-          language: "Swift",
-          level: "入門",
-          details: "學習 Swift 與 iOS App 開發基礎。",
-          category: "行動開發",
-          tags: ["iOS", "Swift", "App"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/QEt2EpfaYbs/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=QEt2EpfaYbs",
-        },
-        {
-          title: "資料庫設計與 SQL",
-          language: "SQL",
-          level: "入門",
-          details: "學習資料庫設計、查詢語法與資料操作。",
-          category: "資料庫",
-          tags: ["SQL", "資料庫", "查詢"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/19TsIFHaEec/hq720.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=19TsIFHaEec",
-        },
-        {
-          title: "Node.js 後端開發",
-          language: "JavaScript",
-          level: "進階",
-          details: "使用 Node.js 建立 RESTful API 與伺服器應用。",
-          category: "後端開發",
-          tags: ["Node.js", "API", "後端"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/Lx11PEXpkSU/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl:
-            "https://www.youtube.com/watch?v=Lx11PEXpkSU&list=PL91gvBcdjUtZVtROM5MY-DTlk4pfnqbm_",
-        },
-        {
-          title: "Git 版本控制",
-          language: "工具",
-          level: "入門",
-          details: "學習 Git 基本指令與版本管理流程。",
-          category: "工具",
-          tags: ["Git", "版本控制", "協作"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/FKXRiAiQFiY/hqdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=FKXRiAiQFiY",
-        },
-        {
-          title: "Linux 系統操作",
-          language: "Linux",
-          level: "入門",
-          details: "掌握 Linux 常用指令與系統管理。",
-          category: "系統",
-          tags: ["Linux", "系統管理", "命令列"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/qVOCJMBwNXU/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=qVOCJMBwNXU",
-        },
-        {
-          title: "C++ 程式設計",
-          language: "C++",
-          level: "入門",
-          details: "學習 C++ 基礎語法與物件導向設計。",
-          category: "程式入門",
-          tags: ["C++", "物件導向", "程式設計"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/NF2rz5jNY5M/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=NF2rz5jNY5M",
-        },
-        {
-          title: "Java 程式設計",
-          language: "Java",
-          level: "入門",
-          details: "Java 語法、類別、物件與例外處理。",
-          category: "程式入門",
-          tags: ["Java", "物件導向", "程式設計"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/evIGdOzKCYk/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl:
-            "https://www.youtube.com/watch?v=evIGdOzKCYk&list=PLTb8yNz82VDW-Ka3DMZUvhf16zZCPFiGe",
-        },
-        {
-          title: "網頁設計基礎",
-          language: "HTML/CSS",
-          level: "入門",
-          details: "學習 HTML5 與 CSS3 製作響應式網頁。",
-          category: "前端開發",
-          tags: ["HTML", "CSS", "網頁設計"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/6HHN0G2cwBM/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=6HHN0G2cwBM",
-        },
-        {
-          title: "Vue.js 前端框架",
-          language: "JavaScript",
-          level: "進階",
-          details: "掌握 Vue.js 元件、資料綁定與路由。",
-          category: "前端開發",
-          tags: ["Vue.js", "前端", "框架"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/t7Px_M4SbRQ/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl:
-            "https://www.youtube.com/watch?v=t7Px_M4SbRQ&list=PL-g0fdC5RMbq2EbkoiXF2vztGEcoDJoH5",
-        },
-        {
-          title: "Flutter 跨平台開發",
-          language: "Dart",
-          level: "進階",
-          details: "使用 Flutter 開發 iOS/Android 跨平台 App。",
-          category: "行動開發",
-          tags: ["Flutter", "Dart", "跨平台"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/6JcNm-JYZpw/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=6JcNm-JYZpw",
-        },
-        {
-          title: "機器學習入門",
-          language: "Python 3",
-          level: "進階",
-          details: "機器學習基本概念與 scikit-learn 實作。",
-          category: "人工智慧",
-          tags: ["機器學習", "AI", "Python"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/wm9yR1VspPs/hqdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=wm9yR1VspPs",
-        },
-        {
-          title: "深度學習基礎",
-          language: "Python 3",
-          level: "進階",
-          details: "深度學習理論與 TensorFlow 實作。",
-          category: "人工智慧",
-          tags: ["深度學習", "TensorFlow", "AI"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/_PrTJcgKrdk/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=PCgea_z8x8w",
-        },
-        {
-          title: "網路安全基礎",
-          language: "工具",
-          level: "入門",
-          details: "資安基本觀念與常見攻擊手法。",
-          category: "資安",
-          tags: ["資安", "網路安全", "防護"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/Uodr22UUEBk/hq720.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=Uodr22UUEBk",
-        },
-        {
-          title: "雲端運算與 AWS",
-          language: "工具",
-          level: "進階",
-          details: "AWS 雲端服務與部署實務。",
-          category: "雲端",
-          tags: ["AWS", "雲端", "部署"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/Uv-e1RO0lrg/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=Uv-e1RO0lrg",
-        },
-        {
-          title: "資料視覺化",
-          language: "Python 3",
-          level: "進階",
-          details: "使用 Matplotlib、Seaborn 製作圖表。",
-          category: "資料分析",
-          tags: ["資料視覺化", "Python", "圖表"],
-          imageUrl:
-            "https://images.weserv.nl/?url=i.ytimg.com/vi/p4pqSTANWRo/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
-          videoUrl: "https://www.youtube.com/watch?v=p4pqSTANWRo",
-        },
-      ];
+      // 用於存放 API 載入的資料
+      let items = [];
 
       let currentCategory = "";
       let currentSearch = "";
@@ -865,21 +637,33 @@
         `;
       }
       async function filterItems() {
-        let baseUrl = "https://dae-mobile-assignment.hkit.cc/api";
-        let res = await fetch(`${baseUrl}/courses`, {
-          method: "GET",
-        });
-        let json = await res.json();
-        console.log(json);
-        return json.items.map((item) => {
-          return {
-            title: item.title,
-            imageUrl: item.image_url,
-            tags: item.tags,
-            details: item.description,
-          };
-        });
-
+        // 若 items 尚未載入，從 API 取得
+        if (items.length === 0) {
+          try {
+            let baseUrl = "https://dae-mobile-assignment.hkit.cc/api";
+            let res = await fetch(`${baseUrl}/courses?page=1&limit=20`);
+            if (!res.ok) throw new Error("API 載入失敗");
+            let json = await res.json();
+            // 轉換 API 欄位為前端格式
+            items = json.items.map((item) => ({
+              title: item.title,
+              language: item.language || "",
+              level: item.level || "",
+              details: item.description || "",
+              category: item.category || "",
+              tags: item.tags || [],
+              imageUrl: item.imageUrl || "",
+              videoUrl: item.videoUrl || "",
+            }));
+          } catch (e) {
+            // 錯誤時 items 清空
+            items = [];
+            const page = document.getElementById("pageContainer");
+            page.innerHTML = `<div style='color:red;'>${e.message}</div>`;
+            return [];
+          }
+        }
+        // 篩選
         let result = items.filter((item) => {
           const categoryMatch =
             !currentCategory ||
@@ -890,7 +674,7 @@
           let searchMatch = true;
           if (search) {
             const inTitle = item.title.toLowerCase().includes(search);
-            const inTags = item.tags.some((tag) =>
+            const inTags = (item.tags || []).some((tag) =>
               tag.toLowerCase().includes(search)
             );
             const inDetails = item.details.toLowerCase().includes(search);
@@ -903,7 +687,7 @@
         if (advLevel) result = result.filter((i) => i.level === advLevel);
         if (advTag)
           result = result.filter((i) =>
-            i.tags.some((t) =>
+            (i.tags || []).some((t) =>
               t.toLowerCase().includes(advTag.trim().toLowerCase())
             )
           );
