@@ -449,6 +449,21 @@
     <ion-app>
       <ion-header>
         <ion-toolbar>
+          <ion-title> title </ion-title>
+          <ion-buttons slot="end">
+            <ion-button fill="solid">ref</ion-button>
+            <ion-button fill="outline">ref</ion-button>
+            <ion-button fill="clear">ref</ion-button>
+            <ion-button>
+              <ion-icon name="refresh"></ion-icon>
+            </ion-button>
+            <ion-button>
+              <ion-icon name="refresh" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-button slot="end">ref</ion-button>
+        </ion-toolbar>
+        <ion-toolbar>
           <ion-title>
             程式教學
             <span
@@ -761,6 +776,15 @@
       const STORAGE_KEY = "progAppFilter";
       const FAV_KEY = "progAppFavs";
 
+      async function loadCourses() {
+        let baseUrl = "https://dae-mobile-assignment.hkit.cc/api";
+        let res = await fetch(`${baseUrl}/courses`, {
+          method: "GET",
+        });
+        let json = await res.json();
+        console.log(json);
+      }
+
       function loadFavorites() {
         try {
           favorites = JSON.parse(localStorage.getItem(FAV_KEY)) || [];
@@ -840,7 +864,22 @@
           </div>
         `;
       }
-      function filterItems() {
+      async function filterItems() {
+        let baseUrl = "https://dae-mobile-assignment.hkit.cc/api";
+        let res = await fetch(`${baseUrl}/courses`, {
+          method: "GET",
+        });
+        let json = await res.json();
+        console.log(json);
+        return json.items.map((item) => {
+          return {
+            title: item.title,
+            imageUrl: item.image_url,
+            tags: item.tags,
+            details: item.description,
+          };
+        });
+
         let result = items.filter((item) => {
           const categoryMatch =
             !currentCategory ||
@@ -1036,9 +1075,9 @@
         document.getElementById("advTag").value = advTag;
         document.getElementById("advFav").checked = advFav;
       }
-      function updateAll() {
+      async function updateAll() {
         saveFilter();
-        const filtered = filterItems();
+        const filtered = await filterItems();
         renderStatChart(filtered);
         renderCards(filtered);
       }
