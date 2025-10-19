@@ -529,11 +529,31 @@
       <ion-content>
         <div id="statChart" class="stat-chart"></div>
         <div id="pageContainer" class="page-fade-enter"></div>
+        <div
+          id="paginationContainer"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 1em;
+            justify-content: center;
+            margin-top: 1em;
+          "
+        >
+          <button id="prevPageBtn" style="padding: 0.4em 1em">上一頁</button>
+          <div>
+            Page: <span id="currentPage">1</span> /
+            <span id="totalPages">1</span>
+          </div>
+          <button id="nextPageBtn" style="padding: 0.4em 1em">下一頁</button>
+        </div>
       </ion-content>
     </ion-app>
     <script>
       // 用於存放 API 載入的資料
       let items = [];
+      let currentPage = 1;
+      let totalPages = 1;
+      const PAGE_LIMIT = 5;
 
       let currentCategory = "";
       let currentSearch = "";
@@ -637,34 +657,37 @@
         `;
       }
       async function filterItems() {
-        // 若 items 尚未載入，從 API 取得
-        if (items.length === 0) {
-          try {
-            let baseUrl = "https://dae-mobile-assignment.hkit.cc/api";
-            let res = await fetch(`${baseUrl}/courses?page=1&limit=20`);
-            if (!res.ok) throw new Error("API 載入失敗");
-            let json = await res.json();
-            // 轉換 API 欄位為前端格式，補齊 imageUrl/videoUrl 欄位
-            const defaultImg =
-              "https://via.placeholder.com/320x180?text=No+Image";
-            items = json.items.map((item) => ({
-              title: item.title,
-              language: item.language || "",
-              level: item.level || "",
-              details: item.description || "",
-              category: item.category || "",
-              tags: item.tags || [],
-              imageUrl: item.imageUrl || item.image_url || defaultImg,
-              videoUrl: item.videoUrl || item.video_url || "",
-            }));
-          } catch (e) {
-            // 錯誤時 items 清空
-            // items = [];
-            // const page = document.getElementById("pageContainer");
-            // page.innerHTML = `<div style='color:red;'>${e.message}</div>`;
-            // return [];
-            return { error: String(e) };
-          }
+        // 從 API 取得目前頁資料
+        try {
+          let baseUrl = "https://dae-mobile-assignment.hkit.cc/api";
+          let res = await fetch(
+            `${baseUrl}/courses?page=${currentPage}&limit=${PAGE_LIMIT}`
+          );
+          if (!res.ok) throw new Error("API 載入失敗");
+          let json = await res.json();
+          // 轉換 API 欄位為前端格式，補齊 imageUrl/videoUrl 欄位
+          const defaultImg =
+            "https://via.placeholder.com/320x180?text=No+Image";
+          items = json.items.map((item) => ({
+            title: item.title,
+            language: item.language || "",
+            level: item.level || "",
+            details: item.description || "",
+            category: item.category || "",
+            tags: item.tags || [],
+            imageUrl: item.imageUrl || item.image_url || defaultImg,
+            videoUrl: item.videoUrl || item.video_url || "",
+          }));
+          // 更新分頁資訊
+          currentPage = json.pagination?.page || 1;
+          totalPages = Math.ceil(
+            (json.pagination?.total || 1) /
+              (json.pagination?.limit || PAGE_LIMIT)
+          );
+          document.getElementById("currentPage").textContent = currentPage;
+          document.getElementById("totalPages").textContent = totalPages;
+        } catch (e) {
+          return { error: String(e) };
         }
         // 篩選
         let result = items.filter((item) => {
@@ -876,6 +899,10 @@
         const filtered = await filterItems();
         // renderStatChart(filtered);
         renderCards(filtered);
+        // 更新分頁按鈕狀態
+        document.getElementById("prevPageBtn").disabled = currentPage <= 1;
+        document.getElementById("nextPageBtn").disabled =
+          currentPage >= totalPages;
       }
       function reloadWithAnimation() {
         isLoading = true;
@@ -886,6 +913,19 @@
         }, 500 + Math.random() * 400);
       }
       document.addEventListener("DOMContentLoaded", () => {
+        // 分頁按鈕事件
+        document.getElementById("prevPageBtn").addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage--;
+            reloadWithAnimation();
+          }
+        });
+        document.getElementById("nextPageBtn").addEventListener("click", () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            reloadWithAnimation();
+          }
+        });
         loadFavorites();
         loadFilter();
         updateCategoryOptions();
