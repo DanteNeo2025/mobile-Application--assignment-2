@@ -644,7 +644,9 @@
             let res = await fetch(`${baseUrl}/courses?page=1&limit=20`);
             if (!res.ok) throw new Error("API 載入失敗");
             let json = await res.json();
-            // 轉換 API 欄位為前端格式
+            // 轉換 API 欄位為前端格式，補齊 imageUrl/videoUrl 欄位
+            const defaultImg =
+              "https://via.placeholder.com/320x180?text=No+Image";
             items = json.items.map((item) => ({
               title: item.title,
               language: item.language || "",
@@ -652,8 +654,8 @@
               details: item.description || "",
               category: item.category || "",
               tags: item.tags || [],
-              imageUrl: item.imageUrl || "",
-              videoUrl: item.videoUrl || "",
+              imageUrl: item.imageUrl || item.image_url || defaultImg,
+              videoUrl: item.videoUrl || item.video_url || "",
             }));
           } catch (e) {
             // 錯誤時 items 清空
