@@ -451,7 +451,7 @@
         <ion-toolbar>
           <ion-title> 程式教學 </ion-title>
           <ion-buttons slot="end">
-            <ion-button slot="end">註冊</ion-button>
+            <ion-button slot="end" id="openRegisterBtn">註冊</ion-button>
             <ion-button fill="outline">登入</ion-button>
             <ion-button>
               <ion-icon name="refresh" slot="icon-only"></ion-icon>
@@ -509,6 +509,34 @@
         </div>
       </ion-header>
       <ion-content>
+        <!-- 註冊按鈕已移至 header slot="end" -->
+        <ion-modal id="registerModal">
+          <div style="padding: 2em; max-width: 400px; margin: auto">
+            <h2 style="text-align: center">註冊帳號</h2>
+            <ion-item>
+              <ion-label position="stacked">使用者名稱</ion-label>
+              <ion-input id="regUsername" type="text" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">密碼</ion-label>
+              <ion-input id="regPassword" type="password" required></ion-input>
+            </ion-item>
+            <div style="margin-top: 1.5em; text-align: center">
+              <ion-button id="doRegisterBtn" expand="block">註冊</ion-button>
+              <ion-button
+                id="closeRegisterBtn"
+                color="medium"
+                expand="block"
+                fill="outline"
+                >取消</ion-button
+              >
+            </div>
+            <div
+              id="registerMsg"
+              style="margin-top: 1em; text-align: center; color: red"
+            ></div>
+          </div>
+        </ion-modal>
         <div id="statChart" class="stat-chart"></div>
         <div
           id="paginationContainer"
@@ -531,7 +559,64 @@
       </ion-content>
     </ion-app>
     <script>
-      // 用於存放 API 載入的資料
+      // ====== Ionic 註冊頁面功能 ======
+      const registerModal = document.getElementById("registerModal");
+      const openRegisterBtn = document.getElementById("openRegisterBtn");
+      const closeRegisterBtn = document.getElementById("closeRegisterBtn");
+      const doRegisterBtn = document.getElementById("doRegisterBtn");
+      const regUsername = document.getElementById("regUsername");
+      const regPassword = document.getElementById("regPassword");
+      const registerMsg = document.getElementById("registerMsg");
+
+      if (openRegisterBtn && registerModal) {
+        openRegisterBtn.addEventListener("click", async () => {
+          await registerModal.present();
+        });
+      }
+      if (closeRegisterBtn && registerModal) {
+        closeRegisterBtn.addEventListener("click", async () => {
+          await registerModal.dismiss();
+          registerMsg.textContent = "";
+        });
+      }
+      if (doRegisterBtn) {
+        doRegisterBtn.addEventListener("click", async () => {
+          const username = regUsername.value.trim();
+          const password = regPassword.value.trim();
+          if (!username || !password) {
+            registerMsg.textContent = "請輸入帳號與密碼";
+            return;
+          }
+          registerMsg.textContent = "註冊中...";
+          try {
+            const res = await fetch(
+              "https://dae-mobile-assignment.hkit.cc/api/auth/signup",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+              }
+            );
+            if (!res.ok) {
+              const err = await res.json();
+              registerMsg.textContent = err.error || "註冊失敗";
+              return;
+            }
+            const data = await res.json();
+            registerMsg.style.color = "green";
+            registerMsg.textContent = "註冊成功！請記下您的帳號密碼";
+            setTimeout(() => {
+              registerModal.dismiss();
+              registerMsg.textContent = "";
+              registerMsg.style.color = "red";
+            }, 1200);
+          } catch (e) {
+            registerMsg.textContent = "網路錯誤，請稍後再試";
+          }
+        });
+      }
+
+      // ====== 原有功能 ======
       let items = [];
       let currentPage = 1;
       let totalPages = 1;
