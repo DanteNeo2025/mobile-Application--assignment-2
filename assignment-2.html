@@ -659,10 +659,11 @@
             }));
           } catch (e) {
             // 錯誤時 items 清空
-            items = [];
-            const page = document.getElementById("pageContainer");
-            page.innerHTML = `<div style='color:red;'>${e.message}</div>`;
-            return [];
+            // items = [];
+            // const page = document.getElementById("pageContainer");
+            // page.innerHTML = `<div style='color:red;'>${e.message}</div>`;
+            // return [];
+            return { error: String(e) };
           }
         }
         // 篩選
@@ -734,6 +735,15 @@
       }
       function renderCards(filtered) {
         const page = document.getElementById("pageContainer");
+
+        if (filtered.error) {
+          page.innerHTML = /* html */ `
+          <div style='color:red;'>${filtered.error}</div>
+          <ion-button onclick="updateAll()">retry</ion-button>
+          `;
+          return;
+        }
+
         page.classList.remove("page-fade-leave");
         page.classList.add("page-fade-enter");
         setTimeout(() => page.classList.remove("page-fade-enter"), 500);
@@ -864,7 +874,7 @@
       async function updateAll() {
         saveFilter();
         const filtered = await filterItems();
-        renderStatChart(filtered);
+        // renderStatChart(filtered);
         renderCards(filtered);
       }
       function reloadWithAnimation() {
