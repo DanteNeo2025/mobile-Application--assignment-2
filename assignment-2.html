@@ -449,7 +449,7 @@
     <ion-app>
       <ion-header>
         <ion-toolbar>
-          <ion-title> title </ion-title>
+          <ion-title> 程式教學 </ion-title>
           <ion-buttons slot="end">
             <ion-button fill="outline">ref</ion-button>
             <ion-button>
@@ -462,21 +462,6 @@
           <ion-button slot="end">ref</ion-button>
         </ion-toolbar>
         <ion-toolbar>
-          <ion-title>
-            程式教學
-            <span
-              style="
-                display: block;
-                font-size: 2em;
-                font-weight: normal;
-                letter-spacing: 0.1em;
-                color: var(--ion-color-medium);
-                margin-top: 0.1em;
-              "
-            >
-              程式語言、前後端、AI、資料分析、行動開發等主題一站式學習
-            </span>
-          </ion-title>
           <div class="toolbar-actions" slot="end">
             <button
               class="view-toggle active"
@@ -528,24 +513,24 @@
       </ion-header>
       <ion-content>
         <div id="statChart" class="stat-chart"></div>
-        <div id="pageContainer" class="page-fade-enter"></div>
         <div
           id="paginationContainer"
           style="
             display: flex;
             align-items: center;
-            gap: 1em;
             justify-content: center;
+            gap: 1em;
             margin-top: 1em;
           "
         >
           <button id="prevPageBtn" style="padding: 0.4em 1em">上一頁</button>
-          <div>
-            Page: <span id="currentPage">1</span> /
-            <span id="totalPages">1</span>
-          </div>
+          <span
+            >Page: <span id="currentPage">1</span> /
+            <span id="totalPages">1</span></span
+          >
           <button id="nextPageBtn" style="padding: 0.4em 1em">下一頁</button>
         </div>
+        <div id="pageContainer" class="page-fade-enter"></div>
       </ion-content>
     </ion-app>
     <script>
