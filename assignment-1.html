@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>程式教學</title>
+    <!-- Ionic CDN -->
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"
+    />
+    <style>
+      html {
+        font-size: 16px;
+      }
+      ion-content {
+        --padding-top: 0;
+      }
+      .toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-left: 1rem;
+      }
+      .view-toggle {
+        font-size: 1.3rem;
+        cursor: pointer;
+        color: var(--ion-color-primary);
+        background: none;
+        border: none;
+        outline: none;
+        padding: 0.2em 0.5em;
+        border-radius: 0.3em;
+        transition: background 0.2s;
+      }
+      .view-toggle.active {
+        background: var(--ion-color-primary-tint);
+        color: var(--ion-color-primary-contrast);
+      }
+      .stat-chart {
+        width: 100%;
+        max-width: 40rem;
+        margin: 1.5rem auto 0.5rem auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .stat-bar {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.7rem;
+        width: 100%;
+        height: 5rem;
+        margin-top: 0.5rem;
+      }
+      .stat-bar-col {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .stat-bar-rect {
+        width: 1.5rem;
+        border-radius: 0.4rem 0.4rem 0 0;
+        background: var(--ion-color-primary);
+        transition: height 0.7s cubic-bezier(0.4, 2, 0.6, 1);
+        margin-bottom: 0.2rem;
+      }
+      .stat-bar-label {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 0.2rem;
+        text-align: center;
+        word-break: break-all;
+      }
+      .stat-bar-value {
+        font-size: 0.95em;
+        color: #222;
+        margin-bottom: 0.1rem;
+      }
+      .lang-header {
+        letter-spacing: 0.03em;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+        margin-left: 0;
+        margin-right: 0;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.0625rem 0.25rem #0001;
+        padding: 0.5em 1em;
+        font-size: 1.15em;
+        font-weight: bold;
+        display: block;
+        min-width: 7.5rem;
+        background: #3572a5;
+        z-index: 1;
+        position: relative;
+      }
+      .reset-chip {
+        margin-left: 0.7em;
+        cursor: pointer;
+        user-select: none;
+      }
+      .favorite-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.3em;
+        color: #e6b800;
+        margin-left: 0.5em;
+        vertical-align: middle;
+        transition: color 0.2s;
+      }
+      .favorite-btn.favorited {
+        color: #ff9800;
+      }
+      .favorite-btn:focus {
+        outline: 2px solid #ff9800;
+      }
+      .fade-in {
+        animation: fadeInCard 0.7s cubic-bezier(0.4, 2, 0.6, 1);
+      }
+      @keyframes fadeInCard {
+        from {
+          opacity: 0;
+          transform: translateY(2rem) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 8rem;
+      }
+      .lds-ellipsis {
+        display: inline-block;
+        position: relative;
+        width: 4rem;
+        height: 2rem;
+      }
+      .lds-ellipsis div {
+        position: absolute;
+        top: 0.8rem;
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 50%;
+        background: var(--ion-color-primary);
+        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+      }
+      .lds-ellipsis div:nth-child(1) {
+        left: 0;
+        animation: lds-ellipsis1 0.6s infinite;
+      }
+      .lds-ellipsis div:nth-child(2) {
+        left: 0;
+        animation: lds-ellipsis2 0.6s infinite;
+      }
+      .lds-ellipsis div:nth-child(3) {
+        left: 1.6rem;
+        animation: lds-ellipsis2 0.6s infinite;
+      }
+      .lds-ellipsis div:nth-child(4) {
+        left: 3.2rem;
+        animation: lds-ellipsis3 0.6s infinite;
+      }
+      @keyframes lds-ellipsis1 {
+        0% {
+          transform: scale(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes lds-ellipsis2 {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(1.6rem);
+        }
+      }
+      @keyframes lds-ellipsis3 {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(0);
+        }
+      }
+      .card-list-view {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .card-grid-view {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+        gap: 2rem;
+      }
+      ion-card {
+        margin: 0;
+        border-radius: 0.75rem;
+        box-shadow: 0 0.125rem 0.5rem #0002;
+        transition: box-shadow 0.2s;
+        overflow: hidden;
+        background: #fff;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        min-height: 10rem;
+      }
+      .card-content-flex {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        gap: 1.2rem;
+      }
+      .media-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.7rem;
+        min-width: 8.75rem;
+        max-width: 11.25rem;
+        width: 11.25rem;
+        height: 100%;
+        justify-content: center;
+      }
+      .media-img {
+        width: 8.75rem;
+        height: 6.25rem;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        border: 1px solid #eee;
+        background: #f8f8f8;
+      }
+      .media-video,
+      .media-iframe {
+        width: 8.75rem;
+        height: 5rem;
+        border-radius: 0.5rem;
+        border: 1px solid #eee;
+        background: #000;
+      }
+      .item-info {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        min-width: 0;
+        overflow: hidden;
+        gap: 0.4rem;
+      }
+      .item-info-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.8rem;
+        width: 100%;
+      }
+      .item-info-col {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .item-title,
+      .item-subtitle,
+      .item-details,
+      .tag-container {
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-all;
+        overflow: visible;
+        text-overflow: initial;
+        margin-bottom: 0.2em;
+        font-size: 1em;
+        width: 100%;
+      }
+      .item-title {
+        font-weight: bold;
+        font-size: 1.08em;
+      }
+      .item-subtitle {
+        color: var(--ion-color-medium);
+        font-size: 0.97em;
+      }
+      .item-details {
+        color: #444;
+        font-size: 0.97em;
+      }
+      .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        align-items: center;
+        min-width: 0;
+        width: 100%;
+        overflow-wrap: break-word;
+        word-break: break-all;
+      }
+      .advanced-search {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1rem 0 0.5rem 0;
+        align-items: center;
+      }
+      .advanced-search label {
+        font-size: 0.98em;
+        margin-right: 0.3em;
+      }
+      .advanced-search select,
+      .advanced-search input[type="text"] {
+        font-size: 1em;
+        padding: 0.2em 0.5em;
+        border-radius: 0.3em;
+        border: 1px solid #ccc;
+      }
+      .page-fade-enter {
+        animation: pageFadeIn 0.5s cubic-bezier(0.4, 2, 0.6, 1);
+      }
+      .page-fade-leave {
+        animation: pageFadeOut 0.4s cubic-bezier(0.4, 2, 0.6, 1);
+      }
+      @keyframes pageFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(2rem);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes pageFadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-2rem);
+        }
+      }
+      /* 響應式設計 */
+      @media (max-width: 430px) {
+        ion-card,
+        .card-content-flex,
+        .media-container {
+          flex-direction: column !important;
+          min-width: 0 !important;
+          max-width: 100vw !important;
+          width: 100% !important;
+          box-sizing: border-box;
+        }
+        .media-img,
+        .media-video,
+        .media-iframe {
+          width: 100% !important;
+          max-width: 100vw !important;
+          height: auto !important;
+          min-width: 0 !important;
+          border-radius: 0.5rem;
+        }
+        .card-list-view,
+        .card-grid-view {
+          gap: 1rem !important;
+        }
+        body,
+        ion-app,
+        ion-content {
+          overflow-x: hidden !important;
+        }
+      }
+      @media (min-width: 431px) and (max-width: 900px) {
+        .card-grid-view {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+        }
+        ion-card {
+          min-width: 16rem;
+          max-width: 100%;
+        }
+        .media-img,
+        .media-video,
+        .media-iframe {
+          width: 8rem;
+          height: 5rem;
+        }
+      }
+      @media (min-width: 901px) {
+        .card-grid-view {
+          grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+          gap: 2rem;
+        }
+        ion-card {
+          min-width: 18rem;
+          max-width: 40rem;
+        }
+        .media-img,
+        .media-video,
+        .media-iframe {
+          width: 9rem;
+          height: 6rem;
+        }
+        .stat-chart {
+          max-width: 40rem;
+        }
+      }
+
+      /* 內容區塊文字置中，欄位內容置中 */
+      ion-card,
+      .card-content-flex,
+      .media-container,
+      .item-info,
+      .item-info-row,
+      .item-info-col,
+      .item-title,
+      .item-subtitle,
+      .item-details,
+      .tag-container {
+        text-align: center !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      /* 保證標籤、chip 也置中 */
+      .tag-container {
+        justify-content: center !important;
+      }
+    </style>
+  </head>
+  <body>
+    <ion-app>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>
+            程式教學
+            <span
+              style="
+                display: block;
+                font-size: 2em;
+                font-weight: normal;
+                letter-spacing: 0.1em;
+                color: var(--ion-color-medium);
+                margin-top: 0.1em;
+              "
+            >
+              程式語言、前後端、AI、資料分析、行動開發等主題一站式學習
+            </span>
+          </ion-title>
+          <div class="toolbar-actions" slot="end">
+            <button
+              class="view-toggle active"
+              id="listViewBtn"
+              title="列表視圖"
+              aria-label="列表視圖"
+            >
+              <ion-icon name="list-outline"></ion-icon>
+            </button>
+            <button
+              class="view-toggle"
+              id="gridViewBtn"
+              title="網格視圖"
+              aria-label="網格視圖"
+            >
+              <ion-icon name="grid-outline"></ion-icon>
+            </button>
+          </div>
+        </ion-toolbar>
+        <ion-searchbar placeholder="搜尋..."></ion-searchbar>
+        <ion-item>
+          <ion-select label="分類" interface="popover"></ion-select>
+          <ion-chip color="tertiary" class="reset-chip">重設</ion-chip>
+        </ion-item>
+        <div class="advanced-search" id="advancedSearch">
+          <label>
+            語言
+            <select id="advLang">
+              <option value="">全部</option>
+            </select>
+          </label>
+          <label>
+            等級
+            <select id="advLevel">
+              <option value="">全部</option>
+              <option value="入門">入門</option>
+              <option value="進階">進階</option>
+            </select>
+          </label>
+          <label>
+            標籤
+            <input type="text" id="advTag" placeholder="輸入標籤關鍵字" />
+          </label>
+          <label>
+            只顯示收藏
+            <input type="checkbox" id="advFav" />
+          </label>
+        </div>
+      </ion-header>
+      <ion-content>
+        <div id="statChart" class="stat-chart"></div>
+        <div id="pageContainer" class="page-fade-enter"></div>
+      </ion-content>
+    </ion-app>
+    <script>
+      // 請將你的 items 陣列資料放在這裡
+      const items = [
+        {
+          title: "Python 基礎入門",
+          language: "Python 3",
+          level: "入門",
+          details:
+            "從零開始學習 Python 程式設計，包含變數、流程控制、函式等基礎概念。",
+          category: "程式入門",
+          tags: ["Python", "程式設計", "入門課程"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/pD4Ga6aIN0c/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=pD4Ga6aIN0c",
+        },
+        {
+          title: "JavaScript 前端開發",
+          language: "JavaScript",
+          level: "入門",
+          details: "學習網頁互動、DOM 操作與 ES6 語法。",
+          category: "前端開發",
+          tags: ["JavaScript", "網頁", "前端"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/0FLkwZ-PH2I/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=0FLkwZ-PH2I",
+        },
+        {
+          title: "React 基礎實作",
+          language: "JavaScript",
+          level: "進階",
+          details: "掌握 React 元件、props、state 與生命週期。",
+          category: "前端開發",
+          tags: ["React", "前端", "元件化"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/aBTiZfShe-4/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=aBTiZfShe-4&t=4321s",
+        },
+        {
+          title: "資料結構與演算法",
+          language: "Python 3",
+          level: "進階",
+          details: "介紹常見資料結構與演算法，提升解題能力。",
+          category: "演算法",
+          tags: ["資料結構", "演算法", "LeetCode"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/WNN2-jw1EVU/hqdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=WNN2-jw1EVU",
+        },
+        {
+          title: "Android App 開發",
+          language: "Kotlin",
+          level: "入門",
+          details: "使用 Kotlin 開發 Android 行動應用程式。",
+          category: "行動開發",
+          tags: ["Android", "Kotlin", "App"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/6pJqYvge8TY/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl:
+            "https://www.youtube.com/watch?v=6pJqYvge8TY&list=PLPh5-KovAYtFyX5elSTT9wEMt0HxMhR7L",
+        },
+        {
+          title: "iOS App 開發",
+          language: "Swift",
+          level: "入門",
+          details: "學習 Swift 與 iOS App 開發基礎。",
+          category: "行動開發",
+          tags: ["iOS", "Swift", "App"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/QEt2EpfaYbs/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=QEt2EpfaYbs",
+        },
+        {
+          title: "資料庫設計與 SQL",
+          language: "SQL",
+          level: "入門",
+          details: "學習資料庫設計、查詢語法與資料操作。",
+          category: "資料庫",
+          tags: ["SQL", "資料庫", "查詢"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/19TsIFHaEec/hq720.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=19TsIFHaEec",
+        },
+        {
+          title: "Node.js 後端開發",
+          language: "JavaScript",
+          level: "進階",
+          details: "使用 Node.js 建立 RESTful API 與伺服器應用。",
+          category: "後端開發",
+          tags: ["Node.js", "API", "後端"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/Lx11PEXpkSU/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl:
+            "https://www.youtube.com/watch?v=Lx11PEXpkSU&list=PL91gvBcdjUtZVtROM5MY-DTlk4pfnqbm_",
+        },
+        {
+          title: "Git 版本控制",
+          language: "工具",
+          level: "入門",
+          details: "學習 Git 基本指令與版本管理流程。",
+          category: "工具",
+          tags: ["Git", "版本控制", "協作"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/FKXRiAiQFiY/hqdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=FKXRiAiQFiY",
+        },
+        {
+          title: "Linux 系統操作",
+          language: "Linux",
+          level: "入門",
+          details: "掌握 Linux 常用指令與系統管理。",
+          category: "系統",
+          tags: ["Linux", "系統管理", "命令列"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/qVOCJMBwNXU/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=qVOCJMBwNXU",
+        },
+        {
+          title: "C++ 程式設計",
+          language: "C++",
+          level: "入門",
+          details: "學習 C++ 基礎語法與物件導向設計。",
+          category: "程式入門",
+          tags: ["C++", "物件導向", "程式設計"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/NF2rz5jNY5M/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=NF2rz5jNY5M",
+        },
+        {
+          title: "Java 程式設計",
+          language: "Java",
+          level: "入門",
+          details: "Java 語法、類別、物件與例外處理。",
+          category: "程式入門",
+          tags: ["Java", "物件導向", "程式設計"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/evIGdOzKCYk/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl:
+            "https://www.youtube.com/watch?v=evIGdOzKCYk&list=PLTb8yNz82VDW-Ka3DMZUvhf16zZCPFiGe",
+        },
+        {
+          title: "網頁設計基礎",
+          language: "HTML/CSS",
+          level: "入門",
+          details: "學習 HTML5 與 CSS3 製作響應式網頁。",
+          category: "前端開發",
+          tags: ["HTML", "CSS", "網頁設計"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/6HHN0G2cwBM/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=6HHN0G2cwBM",
+        },
+        {
+          title: "Vue.js 前端框架",
+          language: "JavaScript",
+          level: "進階",
+          details: "掌握 Vue.js 元件、資料綁定與路由。",
+          category: "前端開發",
+          tags: ["Vue.js", "前端", "框架"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/t7Px_M4SbRQ/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl:
+            "https://www.youtube.com/watch?v=t7Px_M4SbRQ&list=PL-g0fdC5RMbq2EbkoiXF2vztGEcoDJoH5",
+        },
+        {
+          title: "Flutter 跨平台開發",
+          language: "Dart",
+          level: "進階",
+          details: "使用 Flutter 開發 iOS/Android 跨平台 App。",
+          category: "行動開發",
+          tags: ["Flutter", "Dart", "跨平台"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/6JcNm-JYZpw/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=6JcNm-JYZpw",
+        },
+        {
+          title: "機器學習入門",
+          language: "Python 3",
+          level: "進階",
+          details: "機器學習基本概念與 scikit-learn 實作。",
+          category: "人工智慧",
+          tags: ["機器學習", "AI", "Python"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/wm9yR1VspPs/hqdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=wm9yR1VspPs",
+        },
+        {
+          title: "深度學習基礎",
+          language: "Python 3",
+          level: "進階",
+          details: "深度學習理論與 TensorFlow 實作。",
+          category: "人工智慧",
+          tags: ["深度學習", "TensorFlow", "AI"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/_PrTJcgKrdk/sddefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=PCgea_z8x8w",
+        },
+        {
+          title: "網路安全基礎",
+          language: "工具",
+          level: "入門",
+          details: "資安基本觀念與常見攻擊手法。",
+          category: "資安",
+          tags: ["資安", "網路安全", "防護"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/Uodr22UUEBk/hq720.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=Uodr22UUEBk",
+        },
+        {
+          title: "雲端運算與 AWS",
+          language: "工具",
+          level: "進階",
+          details: "AWS 雲端服務與部署實務。",
+          category: "雲端",
+          tags: ["AWS", "雲端", "部署"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/Uv-e1RO0lrg/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=Uv-e1RO0lrg",
+        },
+        {
+          title: "資料視覺化",
+          language: "Python 3",
+          level: "進階",
+          details: "使用 Matplotlib、Seaborn 製作圖表。",
+          category: "資料分析",
+          tags: ["資料視覺化", "Python", "圖表"],
+          imageUrl:
+            "https://images.weserv.nl/?url=i.ytimg.com/vi/p4pqSTANWRo/maxresdefault.jpg&w=800&h=800&fit=contain&output=jpg&q=85&il&n=-1",
+          videoUrl: "https://www.youtube.com/watch?v=p4pqSTANWRo",
+        },
+      ];
+
+      let currentCategory = "";
+      let currentSearch = "";
+      let currentView = "list";
+      let isLoading = false;
+      let advLang = "";
+      let advLevel = "";
+      let advTag = "";
+      let advFav = false;
+      let favorites = [];
+
+      const STORAGE_KEY = "progAppFilter";
+      const FAV_KEY = "progAppFavs";
+
+      function loadFavorites() {
+        try {
+          favorites = JSON.parse(localStorage.getItem(FAV_KEY)) || [];
+        } catch {
+          favorites = [];
+        }
+      }
+      function saveFavorites() {
+        localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
+      }
+      function saveFilter() {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            currentCategory,
+            currentSearch,
+            currentView,
+            advLang,
+            advLevel,
+            advTag,
+            advFav,
+          })
+        );
+      }
+      function loadFilter() {
+        try {
+          const obj = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (!obj) return;
+          currentCategory = obj.currentCategory || "";
+          currentSearch = obj.currentSearch || "";
+          currentView = obj.currentView || "list";
+          advLang = obj.advLang || "";
+          advLevel = obj.advLevel || "";
+          advTag = obj.advTag || "";
+          advFav = !!obj.advFav;
+        } catch {}
+      }
+      function renderStatChart(filtered) {
+        const chart = document.getElementById("statChart");
+        const stat = {};
+        filtered.forEach((item) => {
+          stat[item.category] = (stat[item.category] || 0) + 1;
+        });
+        const categories = Object.keys(stat);
+        if (categories.length === 0) {
+          chart.innerHTML = "";
+          return;
+        }
+        const max = Math.max(...Object.values(stat));
+        chart.innerHTML = `
+          <div style="font-weight:bold;font-size:1.1em;margin-bottom:0.2em;">分類統計</div>
+          <div class="stat-bar">
+            ${categories
+              .map(
+                (cat) => `
+              <div class="stat-bar-col">
+                <div class="stat-bar-rect" style="height:${(
+                  (stat[cat] / max) * 4 +
+                  0.5
+                ).toFixed(2)}rem;background:var(--ion-color-primary);"></div>
+                <div class="stat-bar-value">${stat[cat]}</div>
+                <div class="stat-bar-label">${cat}</div>
+              </div>
+            `
+              )
+              .join("")}
+          </div>
+        `;
+      }
+      function showLoader() {
+        const page = document.getElementById("pageContainer");
+        page.innerHTML = `
+          <div class="loader">
+            <div class="lds-ellipsis">
+              <div></div><div></div><div></div><div></div>
+            </div>
+          </div>
+        `;
+      }
+      function filterItems() {
+        let result = items.filter((item) => {
+          const categoryMatch =
+            !currentCategory ||
+            currentCategory === "" ||
+            currentCategory === "全部" ||
+            item.category === currentCategory;
+          const search = currentSearch.trim().toLowerCase();
+          let searchMatch = true;
+          if (search) {
+            const inTitle = item.title.toLowerCase().includes(search);
+            const inTags = item.tags.some((tag) =>
+              tag.toLowerCase().includes(search)
+            );
+            const inDetails = item.details.toLowerCase().includes(search);
+            const inLang = item.language.toLowerCase().includes(search);
+            searchMatch = inTitle || inTags || inDetails || inLang;
+          }
+          return categoryMatch && searchMatch;
+        });
+        if (advLang) result = result.filter((i) => i.language === advLang);
+        if (advLevel) result = result.filter((i) => i.level === advLevel);
+        if (advTag)
+          result = result.filter((i) =>
+            i.tags.some((t) =>
+              t.toLowerCase().includes(advTag.trim().toLowerCase())
+            )
+          );
+        if (advFav) result = result.filter((i) => favorites.includes(i.title));
+        return result;
+      }
+      function getYouTubeId(url) {
+        try {
+          const u = new URL(url);
+          if (u.hostname.includes("youtube.com") && u.searchParams.get("v")) {
+            return u.searchParams.get("v");
+          }
+          if (u.hostname === "youtu.be") {
+            return u.pathname.slice(1);
+          }
+        } catch (e) {}
+        return null;
+      }
+      function groupByLanguage(items) {
+        const groups = {};
+        items.forEach((item) => {
+          if (!groups[item.language]) groups[item.language] = [];
+          groups[item.language].push(item);
+        });
+        return groups;
+      }
+      function getLanguageColor(lang) {
+        const map = {
+          "Python 3": "#3572A5",
+          JavaScript: "#E7E600",
+          Kotlin: "#7F52FF",
+          Swift: "#4BB900",
+          SQL: "#CEEDF8",
+          Linux: "#9AE7C5",
+          "C++": "#0B0C0E",
+          Java: "#FFC801",
+          "HTML/CSS": "#E65802",
+          Dart: "#220186",
+          工具: "#888",
+        };
+        return map[lang] || "#666";
+      }
+      function renderCards(filtered) {
+        const page = document.getElementById("pageContainer");
+        page.classList.remove("page-fade-leave");
+        page.classList.add("page-fade-enter");
+        setTimeout(() => page.classList.remove("page-fade-enter"), 500);
+
+        const groups = groupByLanguage(filtered);
+        let html = "";
+        Object.keys(groups).forEach((lang) => {
+          html += `<div class="lang-header" style="background:${getLanguageColor(
+            lang
+          )};color:#fff;">${lang}</div>`;
+          const itemsArr = groups[lang];
+          if (currentView === "list") {
+            html += `<div class="card-list-view">`;
+            itemsArr.forEach((item, idx) => {
+              html += renderCard(item, idx);
+            });
+            html += `</div>`;
+          } else {
+            html += `<div class="card-grid-view">`;
+            itemsArr.forEach((item, idx) => {
+              html += renderCard(item, idx);
+            });
+            html += `</div>`;
+          }
+        });
+        page.innerHTML = html;
+        document.querySelectorAll("ion-card").forEach((el, i) => {
+          el.classList.add("fade-in");
+          setTimeout(() => el.classList.remove("fade-in"), 800 + i * 30);
+        });
+        document.querySelectorAll(".favorite-btn").forEach((btn) => {
+          btn.onclick = function () {
+            const title = this.getAttribute("data-title");
+            if (!title) return;
+            if (favorites.includes(title)) {
+              favorites = favorites.filter((t) => t !== title);
+            } else {
+              favorites.push(title);
+            }
+            saveFavorites();
+            updateAll();
+          };
+        });
+      }
+      function renderCard(item, idx) {
+        const ytId = getYouTubeId(item.videoUrl);
+        const isFav = favorites.includes(item.title);
+        return `
+          <ion-card>
+            <div class="card-content-flex">
+              <div class="media-container">
+                <img class="media-img" src="${item.imageUrl}" alt="${
+          item.title
+        }" loading="lazy" />
+                ${
+                  ytId
+                    ? `<iframe class="media-iframe" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen title="YouTube影片"></iframe>`
+                    : `<video class="media-video" src="${item.videoUrl}" controls></video>`
+                }
+              </div>
+              <div class="item-info">
+                <div class="item-info-row">
+                  <div class="item-info-col">
+                    <div class="item-title">${item.title}
+                      <button class="favorite-btn${
+                        isFav ? " favorited" : ""
+                      }" data-title="${
+          item.title
+        }" title="收藏/取消收藏" aria-label="收藏/取消收藏">
+                        <ion-icon name="${
+                          isFav ? "star" : "star-outline"
+                        }"></ion-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="item-info-col">
+                    <div class="item-subtitle">${item.language}｜${
+          item.level
+        }</div>
+                  </div>
+                </div>
+                <div class="item-info-row">
+                  <div class="item-info-col">
+                    <div class="item-details">${item.details}</div>
+                  </div>
+                  <div class="item-info-col">
+                    <div class="tag-container">
+                      <ion-chip color="primary" size="small" style="cursor:pointer">${
+                        item.category
+                      }</ion-chip>
+                      ${item.tags
+                        .map(
+                          (tag) =>
+                            `<ion-chip size="small" color="secondary">${tag}</ion-chip>`
+                        )
+                        .join("")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ion-card>
+        `;
+      }
+      function updateCategoryOptions() {
+        const select = document.querySelector("ion-select");
+        const categories = Array.from(new Set(items.map((i) => i.category)));
+        select.innerHTML =
+          `<ion-select-option value="">全部</ion-select-option>` +
+          categories
+            .map(
+              (c) => `<ion-select-option value="${c}">${c}</ion-select-option>`
+            )
+            .join("");
+        select.value = currentCategory || "";
+      }
+      function updateAdvancedOptions() {
+        const advLangSel = document.getElementById("advLang");
+        const langs = Array.from(new Set(items.map((i) => i.language)));
+        advLangSel.innerHTML =
+          `<option value="">全部</option>` +
+          langs.map((l) => `<option value="${l}">${l}</option>`).join("");
+        advLangSel.value = advLang;
+        document.getElementById("advLevel").value = advLevel;
+        document.getElementById("advTag").value = advTag;
+        document.getElementById("advFav").checked = advFav;
+      }
+      function updateAll() {
+        saveFilter();
+        const filtered = filterItems();
+        renderStatChart(filtered);
+        renderCards(filtered);
+      }
+      function reloadWithAnimation() {
+        isLoading = true;
+        showLoader();
+        setTimeout(() => {
+          isLoading = false;
+          updateAll();
+        }, 500 + Math.random() * 400);
+      }
+      document.addEventListener("DOMContentLoaded", () => {
+        loadFavorites();
+        loadFilter();
+        updateCategoryOptions();
+        updateAdvancedOptions();
+        document.querySelector("ion-searchbar").value = currentSearch;
+        reloadWithAnimation();
+
+        const searchbar = document.querySelector("ion-searchbar");
+        searchbar.addEventListener("ionInput", (event) => {
+          currentSearch = event.target.value || "";
+          reloadWithAnimation();
+        });
+
+        const categorySelect = document.querySelector("ion-select");
+        categorySelect.addEventListener("ionChange", (event) => {
+          currentCategory = event.target.value;
+          reloadWithAnimation();
+        });
+
+        document.body.addEventListener("click", function (e) {
+          const chip = e.target.closest("ion-chip");
+          if (
+            chip &&
+            chip.textContent &&
+            chip.getAttribute("color") === "primary"
+          ) {
+            currentCategory = chip.textContent.trim();
+            updateCategoryOptions();
+            reloadWithAnimation();
+          }
+          if (
+            chip &&
+            chip.textContent &&
+            chip.classList.contains("reset-chip")
+          ) {
+            currentCategory = "";
+            updateCategoryOptions();
+            reloadWithAnimation();
+          }
+        });
+
+        document.getElementById("listViewBtn").addEventListener("click", () => {
+          if (currentView !== "list") {
+            currentView = "list";
+            document.getElementById("listViewBtn").classList.add("active");
+            document.getElementById("gridViewBtn").classList.remove("active");
+            reloadWithAnimation();
+          }
+        });
+        document.getElementById("gridViewBtn").addEventListener("click", () => {
+          if (currentView !== "grid") {
+            currentView = "grid";
+            document.getElementById("gridViewBtn").classList.add("active");
+            document.getElementById("listViewBtn").classList.remove("active");
+            reloadWithAnimation();
+          }
+        });
+
+        document.getElementById("advLang").addEventListener("change", (e) => {
+          advLang = e.target.value;
+          reloadWithAnimation();
+        });
+        document.getElementById("advLevel").addEventListener("change", (e) => {
+          advLevel = e.target.value;
+          reloadWithAnimation();
+        });
+        document.getElementById("advTag").addEventListener("input", (e) => {
+          advTag = e.target.value;
+          reloadWithAnimation();
+        });
+        document.getElementById("advFav").addEventListener("change", (e) => {
+          advFav = e.target.checked;
+          reloadWithAnimation();
+        });
+
+        const page = document.getElementById("pageContainer");
+        page.addEventListener("transitionstart", () => {
+          page.classList.add("page-fade-leave");
+        });
+        page.addEventListener("transitionend", () => {
+          page.classList.remove("page-fade-leave");
+        });
+      });
+    </script>
+  </body>
+</html>
