@@ -452,7 +452,7 @@
           <ion-title> 程式教學 </ion-title>
           <ion-buttons slot="end">
             <ion-button slot="end" id="openRegisterBtn">註冊</ion-button>
-            <ion-button fill="outline">登入</ion-button>
+            <ion-button fill="outline" id="openLoginBtn">登入</ion-button>
             <ion-button>
               <ion-icon name="refresh" slot="icon-only"></ion-icon>
             </ion-button>
@@ -537,6 +537,38 @@
             ></div>
           </div>
         </ion-modal>
+        <!-- 登入彈窗 -->
+        <ion-modal id="loginModal">
+          <div style="padding: 2em; max-width: 400px; margin: auto">
+            <h2 style="text-align: center">用戶登入</h2>
+            <ion-item>
+              <ion-label position="stacked">使用者名稱</ion-label>
+              <ion-input id="loginUsername" type="text" required></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">密碼</ion-label>
+              <ion-input
+                id="loginPassword"
+                type="password"
+                required
+              ></ion-input>
+            </ion-item>
+            <div style="margin-top: 1.5em; text-align: center">
+              <ion-button id="doLoginBtn" expand="block">登入</ion-button>
+              <ion-button
+                id="closeLoginBtn"
+                color="medium"
+                expand="block"
+                fill="outline"
+                >取消</ion-button
+              >
+            </div>
+            <div
+              id="loginMsg"
+              style="margin-top: 1em; text-align: center; color: red"
+            ></div>
+          </div>
+        </ion-modal>
         <div id="statChart" class="stat-chart"></div>
         <div
           id="paginationContainer"
@@ -583,11 +615,32 @@
         doRegisterBtn.addEventListener("click", async () => {
           const username = regUsername.value.trim();
           const password = regPassword.value.trim();
+
+          // 輸入驗證
           if (!username || !password) {
             registerMsg.textContent = "請輸入帳號與密碼";
+            registerMsg.style.color = "red";
             return;
           }
-          registerMsg.textContent = "註冊中...";
+
+          if (username.length < 3) {
+            registerMsg.textContent = "帳號至少需要 3 個字元";
+            registerMsg.style.color = "red";
+            return;
+          }
+
+          if (password.length < 6) {
+            registerMsg.textContent = "密碼至少需要 6 個字元";
+            registerMsg.style.color = "red";
+            return;
+          }
+
+          // 禁用按鈕，顯示載入狀態
+          doRegisterBtn.disabled = true;
+          doRegisterBtn.textContent = "註冊中...";
+          registerMsg.textContent = "正在建立帳號...";
+          registerMsg.style.color = "blue";
+
           try {
             const res = await fetch(
               "https://dae-mobile-assignment.hkit.cc/api/auth/signup",
@@ -597,23 +650,234 @@
                 body: JSON.stringify({ username, password }),
               }
             );
+
             if (!res.ok) {
               const err = await res.json();
               registerMsg.textContent = err.error || "註冊失敗";
+              registerMsg.style.color = "red";
               return;
             }
+
             const data = await res.json();
             registerMsg.style.color = "green";
-            registerMsg.textContent = "註冊成功！請記下您的帳號密碼";
+            registerMsg.textContent = "註冊成功！自動登入中...";
+
+            // 註冊成功後自動儲存登入狀態
+            if (data.token) {
+              localStorage.setItem("userToken", data.token);
+              localStorage.setItem("userId", data.user_id);
+              updateLoginStatus(true, username);
+            }
+
             setTimeout(() => {
               registerModal.dismiss();
               registerMsg.textContent = "";
               registerMsg.style.color = "red";
-            }, 1200);
+              // 重設表單
+              regUsername.value = "";
+              regPassword.value = "";
+            }, 2000);
           } catch (e) {
             registerMsg.textContent = "網路錯誤，請稍後再試";
+            registerMsg.style.color = "red";
+          } finally {
+            // 恢復按鈕狀態
+            doRegisterBtn.disabled = false;
+            doRegisterBtn.textContent = "註冊";
           }
         });
+      }
+
+      // ====== Ionic 登入頁面功能 ======
+      const loginModal = document.getElementById("loginModal");
+      const openLoginBtn = document.getElementById("openLoginBtn");
+      const closeLoginBtn = document.getElementById("closeLoginBtn");
+      const doLoginBtn = document.getElementById("doLoginBtn");
+      const loginUsername = document.getElementById("loginUsername");
+      const loginPassword = document.getElementById("loginPassword");
+      const loginMsg = document.getElementById("loginMsg");
+
+      if (openLoginBtn && loginModal) {
+        openLoginBtn.addEventListener("click", async () => {
+          await loginModal.present();
+        });
+      }
+      if (closeLoginBtn && loginModal) {
+        closeLoginBtn.addEventListener("click", async () => {
+          await loginModal.dismiss();
+          loginMsg.textContent = "";
+        });
+      }
+      if (doLoginBtn) {
+        doLoginBtn.addEventListener("click", async () => {
+          const username = loginUsername.value.trim();
+          const password = loginPassword.value.trim();
+
+          // 輸入驗證
+          if (!username || !password) {
+            loginMsg.textContent = "請輸入帳號與密碼";
+            loginMsg.style.color = "red";
+            return;
+          }
+
+          // 禁用按鈕，顯示載入狀態
+          doLoginBtn.disabled = true;
+          doLoginBtn.textContent = "登入中...";
+          loginMsg.textContent = "正在驗證...";
+          loginMsg.style.color = "blue";
+
+          try {
+            const res = await fetch(
+              "https://dae-mobile-assignment.hkit.cc/api/auth/login",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+              }
+            );
+
+            if (!res.ok) {
+              const err = await res.json();
+              loginMsg.textContent = err.error || "登入失敗";
+              loginMsg.style.color = "red";
+              return;
+            }
+
+            const data = await res.json();
+            loginMsg.style.color = "green";
+            loginMsg.textContent = "登入成功！";
+
+            // 登入成功後儲存登入狀態
+            if (data.token) {
+              localStorage.setItem("userToken", data.token);
+              localStorage.setItem("userId", data.user_id);
+              updateLoginStatus(true, username);
+
+              // 載入用戶的收藏
+              loadUserBookmarks();
+            }
+
+            setTimeout(() => {
+              loginModal.dismiss();
+              loginMsg.textContent = "";
+              loginMsg.style.color = "red";
+              // 重設表單
+              loginUsername.value = "";
+              loginPassword.value = "";
+            }, 1500);
+          } catch (e) {
+            loginMsg.textContent = "網路錯誤，請稍後再試";
+            loginMsg.style.color = "red";
+          } finally {
+            // 恢復按鈕狀態
+            doLoginBtn.disabled = false;
+            doLoginBtn.textContent = "登入";
+          }
+        });
+      }
+
+      // ====== 登入狀態管理 ======
+      let currentUser = null;
+      let userToken = null;
+
+      function updateLoginStatus(isLoggedIn, username = null) {
+        currentUser = isLoggedIn ? username : null;
+        userToken = isLoggedIn ? localStorage.getItem("userToken") : null;
+
+        // 更新 UI 按鈕
+        const registerBtn = document.getElementById("openRegisterBtn");
+        const loginBtn = document.getElementById("openLoginBtn");
+
+        if (isLoggedIn) {
+          // 登入狀態：隱藏註冊/登入按鈕，顯示用戶名和登出按鈕
+          if (registerBtn) registerBtn.style.display = "none";
+          if (loginBtn) {
+            loginBtn.textContent = `${username}`;
+            loginBtn.onclick = showUserMenu;
+          }
+        } else {
+          // 未登入狀態：顯示註冊/登入按鈕
+          if (registerBtn) registerBtn.style.display = "inline-block";
+          if (loginBtn) {
+            loginBtn.textContent = "登入";
+            loginBtn.onclick = () => loginModal.present();
+          }
+        }
+      }
+
+      function showUserMenu() {
+        // 簡單的用戶選單
+        const shouldLogout = confirm(
+          `已登入為：${currentUser}\n\n是否要登出？`
+        );
+        if (shouldLogout) {
+          logout();
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userBookmarkIds");
+        updateLoginStatus(false);
+
+        // 清空收藏（因為收藏是跟使用者綁定的）
+        favorites = [];
+        saveFavorites();
+        updateAll(); // 重新載入頁面以更新收藏狀態
+      }
+
+      // 載入用戶收藏
+      async function loadUserBookmarks() {
+        const token = localStorage.getItem("userToken");
+        if (!token) return;
+
+        try {
+          const res = await fetch(
+            "https://dae-mobile-assignment.hkit.cc/api/bookmarks",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          if (res.ok) {
+            const data = await res.json();
+            // 將 API 收藏的 item_ids 轉換為 titles（需要根據實際 API 資料結構調整）
+            // 這裡暫時存儲 item_ids，之後收藏功能會使用
+            localStorage.setItem(
+              "userBookmarkIds",
+              JSON.stringify(data.item_ids || [])
+            );
+
+            // 更新頁面顯示
+            updateAll();
+          }
+        } catch (e) {
+          console.error("載入收藏失敗:", e);
+        }
+      }
+
+      function checkLoginStatus() {
+        const token = localStorage.getItem("userToken");
+        const userId = localStorage.getItem("userId");
+
+        if (token && userId) {
+          // 驗證 token 是否仍然有效
+          fetch("https://dae-mobile-assignment.hkit.cc/api/auth/check", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.user_id) {
+                updateLoginStatus(true, `User${data.user_id}`);
+              } else {
+                logout(); // token 無效，登出
+              }
+            })
+            .catch(() => {
+              logout(); // 檢查失敗，登出
+            });
+        }
       }
 
       // ====== 原有功能 ======
@@ -736,6 +1000,7 @@
           const defaultImg =
             "https://via.placeholder.com/320x180?text=No+Image";
           items = json.items.map((item) => ({
+            id: item.id,
             title: item.title,
             language: item.language || "",
             level: item.level || "",
@@ -865,14 +1130,55 @@
           setTimeout(() => el.classList.remove("fade-in"), 800 + i * 30);
         });
         document.querySelectorAll(".favorite-btn").forEach((btn) => {
-          btn.onclick = function () {
+          btn.onclick = async function () {
             const title = this.getAttribute("data-title");
+            const itemId = this.getAttribute("data-item-id");
             if (!title) return;
-            if (favorites.includes(title)) {
-              favorites = favorites.filter((t) => t !== title);
+
+            const token = localStorage.getItem("userToken");
+            const isFavorited = favorites.includes(title);
+
+            if (token) {
+              // 用戶已登入，使用 API
+              try {
+                if (isFavorited) {
+                  // 取消收藏
+                  const res = await fetch(
+                    `https://dae-mobile-assignment.hkit.cc/api/bookmarks/${itemId}`,
+                    {
+                      method: "DELETE",
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
+                  if (res.ok) {
+                    favorites = favorites.filter((t) => t !== title);
+                  }
+                } else {
+                  // 添加收藏
+                  const res = await fetch(
+                    `https://dae-mobile-assignment.hkit.cc/api/bookmarks/${itemId}`,
+                    {
+                      method: "POST",
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
+                  if (res.ok) {
+                    favorites.push(title);
+                  }
+                }
+              } catch (e) {
+                console.error("收藏操作失敗:", e);
+                return;
+              }
             } else {
-              favorites.push(title);
+              // 用戶未登入，使用本地儲存
+              if (isFavorited) {
+                favorites = favorites.filter((t) => t !== title);
+              } else {
+                favorites.push(title);
+              }
             }
+
             saveFavorites();
             updateAll();
           };
@@ -900,8 +1206,8 @@
                     <div class="item-title">${item.title}
                       <button class="favorite-btn${
                         isFav ? " favorited" : ""
-                      }" data-title="${
-          item.title
+                      }" data-title="${item.title}" data-item-id="${
+          item.id
         }" title="收藏/取消收藏" aria-label="收藏/取消收藏">
                         <ion-icon name="${
                           isFav ? "star" : "star-outline"
@@ -980,6 +1286,9 @@
         }, 500 + Math.random() * 400);
       }
       document.addEventListener("DOMContentLoaded", () => {
+        // 檢查登入狀態
+        checkLoginStatus();
+
         // 分頁按鈕事件
         document.getElementById("prevPageBtn").addEventListener("click", () => {
           if (currentPage > 1) {
