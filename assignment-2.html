@@ -45,6 +45,20 @@
         background: var(--ion-color-primary-tint);
         color: var(--ion-color-primary-contrast);
       }
+
+      /* 刷新按鈕樣式 */
+      #refreshBtn {
+        --color: var(--ion-color-primary);
+        transition: all 0.2s ease;
+      }
+      #refreshBtn:hover {
+        --color: var(--ion-color-primary-shade);
+        transform: scale(1.05);
+      }
+      #refreshBtn ion-icon {
+        transition: transform 0.6s ease-in-out;
+      }
+
       .stat-chart {
         width: 100%;
         max-width: 40rem;
@@ -453,7 +467,11 @@
           <ion-buttons slot="end">
             <ion-button slot="end" id="openRegisterBtn">註冊</ion-button>
             <ion-button fill="outline" id="openLoginBtn">登入</ion-button>
-            <ion-button>
+            <ion-button
+              id="refreshBtn"
+              title="重新載入資料"
+              aria-label="重新載入資料"
+            >
               <ion-icon name="refresh" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -1302,6 +1320,67 @@
             reloadWithAnimation();
           }
         });
+
+        // 刷新按鈕事件
+        document.getElementById("refreshBtn").addEventListener("click", () => {
+          // 防止重複點擊
+          const refreshBtn = document.getElementById("refreshBtn");
+          if (refreshBtn.disabled) return;
+
+          refreshBtn.disabled = true;
+
+          // 重置到第一頁
+          currentPage = 1;
+          // 清除搜尋和篩選條件
+          currentSearch = "";
+          currentCategory = "";
+          advLang = "";
+          advLevel = "";
+          advTag = "";
+          advFav = false;
+
+          // 更新UI元素
+          document.querySelector("ion-searchbar").value = "";
+          document.querySelector("ion-select").value = "";
+          document.getElementById("advLang").value = "";
+          document.getElementById("advLevel").value = "";
+          document.getElementById("advTag").value = "";
+          document.getElementById("advFav").checked = false;
+
+          // 視覺回饋 - 旋轉動畫
+          const refreshIcon = document.querySelector("#refreshBtn ion-icon");
+          refreshIcon.style.transform = "rotate(360deg)";
+          refreshIcon.style.transition = "transform 0.6s ease-in-out";
+
+          // 顯示刷新中提示
+          const pageContainer = document.getElementById("pageContainer");
+          const originalContent = pageContainer.innerHTML;
+          pageContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--ion-color-primary);">
+              <ion-icon name="refresh" style="font-size: 3rem; animation: spin 1s linear infinite;"></ion-icon>
+              <div style="margin-top: 1rem; font-size: 1.1rem;">正在重新載入資料...</div>
+            </div>
+            <style>
+              @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+              }
+            </style>
+          `;
+
+          // 重新載入資料
+          setTimeout(() => {
+            reloadWithAnimation();
+
+            // 重置按鈕和圖示
+            setTimeout(() => {
+              refreshIcon.style.transform = "";
+              refreshIcon.style.transition = "";
+              refreshBtn.disabled = false;
+            }, 600);
+          }, 800);
+        });
+
         loadFavorites();
         loadFilter();
         updateCategoryOptions();
